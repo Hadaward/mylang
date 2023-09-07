@@ -8,7 +8,7 @@ export function isNumber(codePoint: number): boolean {
 /**
  * Accept a-z, A-Z, 0-9 and underscore (_)
  */
-export function isIdentifierOrKeyword(codePoint: number): boolean {
+export function isIdentifier(codePoint: number): boolean {
     return (codePoint>= 65 && codePoint<= 90)
         || (codePoint>= 97 && codePoint<= 122)
         || codePoint=== 95

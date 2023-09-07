@@ -1,6 +1,6 @@
 import { Lexer } from "../lexer.js";
 import { Token, Tokens } from "../tokens.js";
-import { isIdentifierOrKeyword, isNumber } from "../util.js";
+import { isIdentifier, isNumber } from "../util.js";
 
 export class Reader {
     private lexer: Lexer;
@@ -47,12 +47,12 @@ export class Reader {
         );
     }
 
-    readIdentifierOrKeyword(): Token {
+    readIdentifier(): Token {
         const startPos = this.lexer.position.index;
 
         let idk = this.lexer.cursor.character;
 
-        while (isIdentifierOrKeyword(this.lexer.getNextCode()) && this.lexer.next()) {
+        while (isIdentifier(this.lexer.getNextCode()) && this.lexer.next()) {
             idk += this.lexer.cursor.character;
         }
 

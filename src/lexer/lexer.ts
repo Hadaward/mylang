@@ -1,6 +1,6 @@
 import { Reader } from "./reader/reader.js";
 import { Token, Tokens } from "./tokens.js";
-import { isIdentifierOrKeyword, isNumber } from "./util.js";
+import { isIdentifier, isNumber } from "./util.js";
 
 export class Lexer {
     private input: string;
@@ -104,8 +104,8 @@ export class Lexer {
                 default:
                     if (['"', "'"].includes(this.cursor.character)) {
                         tokens.push(reader.readString());
-                    } else if (isIdentifierOrKeyword(this.cursor.characterCode)) {
-                        tokens.push(reader.readIdentifierOrKeyword());
+                    } else if (isIdentifier(this.cursor.characterCode)) {
+                        tokens.push(reader.readIdentifier());
                     } else if (isNumber(this.cursor.characterCode)) {
                         tokens.push(reader.readNumber());
                     } else if (this.cursor.characterCode !== -1) {
