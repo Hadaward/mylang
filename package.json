@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "tsc && node dist/index.js"
+  },
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
+}
