@@ -1,5 +1,6 @@
 import { Lexer } from "../lexer.js";
 import { Token, Tokens } from "../tokens.js";
+import { isIdentifierOrKeyword, isNumber } from "../util.js";
 
 export class Reader {
     private lexer: Lexer;
@@ -32,7 +33,7 @@ export class Reader {
         
         let number = this.lexer.cursor.character;
 
-        while (this.lexer.next() && ((this.lexer.cursor.characterCode >= 48 && this.lexer.cursor.characterCode <= 57) || this.lexer.cursor.character === '.')) {
+        while (this.lexer.next() && isNumber(this.lexer.cursor.characterCode)) {
             number += this.lexer.cursor.character;
         }
 
@@ -44,5 +45,35 @@ export class Reader {
             startPos,
             this.lexer.position.index
         );
+    }
+
+    readIdentifierOrKeyword(): Token {
+        const startPos = this.lexer.position.index;
+
+        let idk = this.lexer.cursor.character;
+
+        while (isIdentifierOrKeyword(this.lexer.getNextCode()) && this.lexer.next()) {
+            idk += this.lexer.cursor.character;
+        }
+
+        return new Token(Tokens.TK_IDENTIFIER, idk, startPos, this.lexer.position.index);
+    }
+
+    readString(): Token {
+        const startPos = this.lexer.position.index;
+        const delimiter = this.lexer.cursor.characterCode;
+        const startLine = this.lexer.position.line;
+
+        let text = "";
+
+        while (this.lexer.next() && this.lexer.cursor.characterCode !== delimiter) {
+            if (startLine !== this.lexer.position.line) {
+                throw new SyntaxError(`A string (${text}) on line ${startLine} was not closed before the end of the line.`);
+            }
+
+            text += this.lexer.cursor.character;
+        }
+
+        return new Token(Tokens.TK_STRING, text, startPos, this.lexer.position.index);
     }
 }

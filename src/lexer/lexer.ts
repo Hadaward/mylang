@@ -1,5 +1,6 @@
 import { Reader } from "./reader/reader.js";
 import { Token, Tokens } from "./tokens.js";
+import { isIdentifierOrKeyword, isNumber } from "./util.js";
 
 export class Lexer {
     private input: string;
@@ -46,6 +47,10 @@ export class Lexer {
         return this.input.charAt(this.position.index + 1) === character;
     }
 
+    getNextCode(): number {
+        return this.input.charCodeAt(this.position.index + 1);
+    }
+
     analysis(): Array<Token> {
         const reader = new Reader(this);
         const tokens: Array<Token> = [];
@@ -83,8 +88,25 @@ export class Lexer {
                 case '\\n':
                     tokens.push(new Token(Tokens.TK_NEWLINE, this.cursor.character, this.position.index, this.position.index));
                     break;
+                case '=':
+                    tokens.push(new Token(Tokens.TK_ASSIGN, this.cursor.character, this.position.index, this.position.index));
+                    break;
+                case '<':
+                    console.log('lesser?');
+                    tokens.push(new Token(Tokens.TK_LESSER, this.cursor.character, this.position.index, this.position.index));
+                    break;
+                case '>':
+                    tokens.push(new Token(Tokens.TK_GREATER, this.cursor.character, this.position.index, this.position.index));
+                    break;
+                case ';':
+                    tokens.push(new Token(Tokens.TK_SEMICOLON, this.cursor.character, this.position.index, this.position.index));
+                    break;
                 default:
-                    if (this.cursor.characterCode >= 48 && this.cursor.characterCode <= 57) {
+                    if (['"', "'"].includes(this.cursor.character)) {
+                        tokens.push(reader.readString());
+                    } else if (isIdentifierOrKeyword(this.cursor.characterCode)) {
+                        tokens.push(reader.readIdentifierOrKeyword());
+                    } else if (isNumber(this.cursor.characterCode)) {
                         tokens.push(reader.readNumber());
                     } else if (this.cursor.characterCode !== -1) {
                         throw new SyntaxError(`Invalid character '${this.cursor.character}' at ${this.position.line}:${this.position.column}`);
